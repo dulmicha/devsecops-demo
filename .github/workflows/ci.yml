@@ -99,8 +99,8 @@ jobs:
       - name: Quality Gate Status
         if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
         run: |
-          echo "::error::QUALITY GATE FAILED: One or more upstream security or testing jobs did not pass."
+          echo "::error::QUALITY GATE FAILED. One or more upstream security or testing jobs did not pass."
           exit 1
 
       - name: Gate Passed
-        run: echo "QUALITY GATE PASSED: All checks passed."
+        run: echo "QUALITY GATE PASSED. All checks passed."
