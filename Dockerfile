@@ -8,9 +8,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 # Install virtualenv and project dependencies
 COPY pyproject.toml README.md ./
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir virtualenv && \
-    virtualenv /opt/venv && \
+RUN python -m venv /opt/venv && \
+    /opt/venv/bin/pip install --no-cache-dir --upgrade pip setuptools wheel && \
     /opt/venv/bin/pip install --no-cache-dir .
 
 
