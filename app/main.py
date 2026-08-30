@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from app.api.endpoints import router as findings_router
 from app.config import settings
 from app.core.logging import setup_logging
+from app.core.middleware import RequestLoggingMiddleware
 from app.database import db
 
 
@@ -24,6 +25,9 @@ app = FastAPI(
     description="DevSecOps Security Findings CRUD API with In-Memory Storage and Observability",
     lifespan=lifespan,
 )
+
+# Attach request logging and correlation ID middleware
+app.add_middleware(RequestLoggingMiddleware)
 
 # Include API routers
 app.include_router(findings_router)
