@@ -6,11 +6,12 @@ WORKDIR /build
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-# Install virtualenv and project dependencies
+# Install project dependencies into virtual environment and prune build-only tooling
 COPY pyproject.toml README.md ./
 RUN python -m venv /opt/venv && \
     /opt/venv/bin/pip install --no-cache-dir --upgrade pip setuptools wheel && \
-    /opt/venv/bin/pip install --no-cache-dir .
+    /opt/venv/bin/pip install --no-cache-dir . && \
+    /opt/venv/bin/pip uninstall -y setuptools pip wheel
 
 
 # Stage 2: Minimal Runtime
@@ -26,8 +27,7 @@ ENV PATH="/opt/venv/bin:$PATH" \
 # Install curl for HEALTHCHECK and patch security updates
 RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
     curl \
-    && rm -rf /var/lib/apt/lists/* \
-    && rm -rf /usr/local/lib/python3.12/site-packages/*
+    && rm -rf /var/lib/apt/lists/*
 
 # Create unprivileged user and group (UID/GID 10001)
 RUN groupadd -g 10001 appgroup && \
