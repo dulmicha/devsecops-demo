@@ -1,0 +1,68 @@
+networks:
+  devsecops-net:
+    driver: bridge
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: security-findings-api
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_PORT=8000
+      - LOG_LEVEL=INFO
+    restart: unless-stopped
+    networks:
+      - devsecops-net
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  loki:
+    image: grafana/loki:3.0.0
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./observability/loki-config.yaml:/etc/loki/local-config.yaml:ro
+    restart: unless-stopped
+    networks:
+      - devsecops-net
+
+  promtail:
+    image: grafana/promtail:3.0.0
+    container_name: promtail
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./observability/promtail-config.yaml:/etc/promtail/config.yaml:ro
+    command: -config.file=/etc/promtail/config.yaml
+    restart: unless-stopped
+    networks:
+      - devsecops-net
+    depends_on:
+      - loki
+
+  grafana:
+    image: grafana/grafana:11.0.0
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/fastapi-logs.json
+    volumes:
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
+    restart: unless-stopped
+    networks:
+      - devsecops-net
+    depends_on:
+      - loki
