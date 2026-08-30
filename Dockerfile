@@ -6,12 +6,12 @@ WORKDIR /build
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-# Install virtualenv and project dependencies
+# Install project dependencies into virtual environment and prune build-only tooling
 COPY pyproject.toml README.md ./
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir virtualenv && \
-    virtualenv /opt/venv && \
-    /opt/venv/bin/pip install --no-cache-dir .
+RUN python -m venv /opt/venv && \
+    /opt/venv/bin/pip install --no-cache-dir --upgrade pip setuptools wheel && \
+    /opt/venv/bin/pip install --no-cache-dir . && \
+    /opt/venv/bin/pip uninstall -y setuptools pip wheel
 
 
 # Stage 2: Minimal Runtime
