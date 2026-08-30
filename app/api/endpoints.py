@@ -62,6 +62,15 @@ def list_findings(
 
 
 @router.get(
+    "/metrics/summary",
+    summary="Get security findings summary metrics",
+)
+def get_metrics_summary() -> dict[str, object]:
+    """Retrieve aggregate security posture metrics grouped by severity and status."""
+    return db.get_summary_metrics()
+
+
+@router.get(
     "/{finding_id}",
     response_model=FindingResponse,
     summary="Get a security finding by ID",

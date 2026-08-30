@@ -164,8 +164,23 @@ class InMemoryFindingStore:
         return False
 
     def count(self) -> int:
-        """Return total number of stored findings."""
+        """Return total number of findings in store."""
         return len(self._store)
+
+    def get_summary_metrics(self) -> dict[str, object]:
+        """Compute aggregate distribution metrics across severity and status."""
+        by_severity = {sev.value: 0 for sev in Severity}
+        by_status = {st.value: 0 for st in Status}
+
+        for item in self._store.values():
+            by_severity[item.severity.value] += 1
+            by_status[item.status.value] += 1
+
+        return {
+            "total": len(self._store),
+            "by_severity": by_severity,
+            "by_status": by_status,
+        }
 
     def clear(self) -> None:
         """Clear all stored data (useful for test isolation)."""

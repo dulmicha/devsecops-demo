@@ -121,3 +121,16 @@ def test_delete_finding_not_found(client: TestClient) -> None:
     """Verify 404 when attempting to delete non-existent finding."""
     response = client.delete("/api/v1/findings/non-existent-uuid")
     assert response.status_code == 404
+
+
+def test_get_metrics_summary(client: TestClient) -> None:
+    """Verify metrics summary endpoint calculates correct aggregate distributions."""
+    response = client.get("/api/v1/findings/metrics/summary")
+    assert response.status_code == 200
+    data = response.json()
+    assert "total" in data
+    assert data["total"] == 2500
+    assert "by_severity" in data
+    assert "by_status" in data
+    assert Severity.CRITICAL.value in data["by_severity"]
+    assert Status.OPEN.value in data["by_status"]
