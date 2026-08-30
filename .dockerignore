@@ -1,0 +1,30 @@
+# Git
+.git
+.gitignore
+
+# Virtual Environments
+.venv
+venv
+ENV/
+env/
+
+# Python Cache & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+tests/
+
+# Linters & Tooling
+.ruff_cache/
+.pre-commit-config.yaml
+.github/
+
+# Local Configs & System Artifacts
+.DS_Store
+*.log

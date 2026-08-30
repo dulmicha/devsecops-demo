@@ -9,11 +9,12 @@ from app.core.logging import setup_logging
 from app.core.middleware import RequestLoggingMiddleware
 from app.database import db
 
+setup_logging(log_level=settings.log_level)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Application lifespan manager to handle startup data seeding and cleanup."""
-    setup_logging(log_level=settings.log_level)
     if db.count() == 0:
         db.seed(count=settings.seed_record_count)
     yield
