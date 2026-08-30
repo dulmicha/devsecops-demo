@@ -26,7 +26,8 @@ ENV PATH="/opt/venv/bin:$PATH" \
 # Install curl for HEALTHCHECK and patch security updates
 RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
     curl \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /usr/local/lib/python3.12/site-packages/*
 
 # Create unprivileged user and group (UID/GID 10001)
 RUN groupadd -g 10001 appgroup && \
