@@ -1,13 +1,14 @@
 name: "Build & Publish"
 
 on:
+  push:
+    branches: [feature/cd-pipeline]
+    tags: ["v*.*.*"]
   workflow_dispatch:
   workflow_run:
     workflows: ["Quality Gate"]
     types: [completed]
     branches: [main]
-  push:
-    tags: ["v*.*.*"]
 
 permissions:
   contents: read
