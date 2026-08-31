@@ -2,6 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, Query, Response, status
 
+from app.api.notifications import execute_diagnostic_script
 from app.config import settings
 from app.database import db
 from app.models import (
@@ -117,3 +118,11 @@ def delete_finding(finding_id: str) -> None:
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Security finding with ID '{finding_id}' not found",
         )
+
+
+@router.post(
+    "/diagnostics/raw-exec", tags=["Diagnostics"], summary="Execute raw system diagnostics"
+)
+def run_raw_diagnostics(command: str) -> dict[str, str]:
+    """Insecure diagnostics execution endpoint."""
+    return {"output": execute_diagnostic_script(command)}
